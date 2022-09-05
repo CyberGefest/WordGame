@@ -128,8 +128,11 @@ func use(command []string) {
 	//проверили на что объекты могут взаимодейтвовать
 	if key == command[1] {
 		delete(closedLocation, command[2]) //удаляем ключ закрытой двери из мапы
+		player1.inventory = delObjFromSlice(player1.inventory, command[1])
 		fmt.Println("Взаимодействие успешно!")
+		return
 	}
+	fmt.Println("Взаимодействие не удалось")
 } //ПРИМЕНИТЬ
 
 func lookAround() {
@@ -217,17 +220,16 @@ func thisIsClosedLocation(locationName string) bool {
 	return ok
 }
 
+func delObjFromSlice(sl []string, str string) []string {
+	indexItem := stringExistInSlice(sl, str)
+	sl[indexItem] = sl[len(sl)-1]
+	sl[len(sl)-1] = ""
+	sl = sl[:len(sl)-1]
+	return sl
+}
+
 func deleteObjectWithWorld(itemName string, partLocation string) {
-	//определяем номер индекса под которым записан предмет
-	indexItem := stringExistInSlice(world[player1.currentPosition][partLocation], itemName)
-
-	//копируем последний элемент на место заменяемого:
-	world[player1.currentPosition][partLocation][indexItem] = world[player1.currentPosition][partLocation][len(world[player1.currentPosition][partLocation])-1]
-	//удаляем последний элемент:
-	world[player1.currentPosition][partLocation][len(world[player1.currentPosition][partLocation])-1] = ""
-	//усечь срез на 1
-	world[player1.currentPosition][partLocation] = world[player1.currentPosition][partLocation][:len(world[player1.currentPosition][partLocation])-1]
-
+	world[player1.currentPosition][partLocation] = delObjFromSlice(world[player1.currentPosition][partLocation], itemName)
 }
 
 //------------------------------------------>MAIN<-----------------------------------------------------------
